@@ -4,11 +4,11 @@ import  re
 import string
 
 blacklist = {
-    'admin'
-    'administrator'
-    'root'
-    'support'
-    'test_user'
+    'admin',
+    'administrator',
+    'root',
+    'support',
+    'test_user',
 }
 
 phone_pattern  = re.compile(r'^\+\d-\d{3}-\d{3}-\d{4}$')
@@ -127,7 +127,7 @@ def validate_registration(
 
         for character in password:
             is_cyrillic = (
-                    cyrillic_pattern.fullmatch(character) is not None
+                cyrillic_pattern.fullmatch(character) is not None
             )
             is_digit = character.isdigit()
             is_special = character in special_characters
@@ -138,47 +138,46 @@ def validate_registration(
                     "Пароль содержит запрещенные символы.",
                 )
 
-
-            if cyrillic_up_pattern.search(password) is None:
-                return _failure(
-                    login,
-                    "Пароль должен содержать хотя бы одну "
-                    "заглавную кириллическую букву.",
-                )
-
-            if cyrillic_low_pattern.search(password) is None:
-                return _failure(
-                    login,
-                    "Пароль должен содержать хотя бы одну "
-                    "строчную кириллическую букву.",
-                )
-
-            if re.search(r"\d", password) is None:
-                return _failure(
-                    login,
-                    "Пароль должен содержать хотя бы одну цифру.",
-                )
-            if not any(
-                    character in special_characters
-                    for character in password
-            ):
-                return _failure(
-                    login,
-                    "Пароль должен содержать хотя бы один спецсимвол.",
-                )
-
-            if password != password_confirmation:
-                return _failure(
-                    login,
-                    "Пароль и подтверждение пароля не совпадают.",
-                )
-
-            logging.info(
-                "Регистрация успешно проверена: "
-                "login=%r, result=True",
+        if cyrillic_up_pattern.search(password) is None:
+            return _failure(
                 login,
+                "Пароль должен содержать хотя бы одну "
+                "заглавную кириллическую букву.",
             )
-            return True, ""
+
+        if cyrillic_low_pattern.search(password) is None:
+            return _failure(
+                login,
+                "Пароль должен содержать хотя бы одну "
+                "строчную кириллическую букву.",
+            )
+
+        if re.search(r"\d", password) is None:
+            return _failure(
+                login,
+                "Пароль должен содержать хотя бы одну цифру.",
+            )
+        if not any(
+                character in special_characters
+                for character in password
+        ):
+            return _failure(
+                login,
+                "Пароль должен содержать хотя бы один спецсимвол.",
+            )
+
+        if password != password_confirmation:
+            return _failure(
+                login,
+                "Пароль и подтверждение пароля не совпадают.",
+            )
+
+        logging.info(
+            "Регистрация успешно проверена: "
+            "login=%r, result=True",
+            login,
+        )
+        return True, ""
 
     except Exception:
         logging.exception(

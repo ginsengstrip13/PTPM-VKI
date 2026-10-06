@@ -49,6 +49,26 @@ class RegistrationValidatorTests(unittest.TestCase):
         self.assertFalse(result)
         self.assertIn("запрещен", message)
 
+    def test_all_reserved_logins_are_rejected(self):
+        for login in ("admin", "administrator", "root", "support", "test_user"):
+            with self.subTest(login=login):
+                result, message = validate_registration(
+                    login,
+                    "Пароль1!",
+                    "Пароль1!",
+                )
+                self.assertFalse(result)
+                self.assertIn("запрещен", message)
+
+    def test_reserved_login_check_is_case_insensitive(self):
+        result, message = validate_registration(
+            "RoOt",
+            "Пароль1!",
+            "Пароль1!",
+        )
+        self.assertFalse(result)
+        self.assertIn("запрещен", message)
+
     def test_short_username(self):
         result, message = validate_registration(
             "user",
@@ -84,6 +104,42 @@ class RegistrationValidatorTests(unittest.TestCase):
         )
         self.assertFalse(result)
         self.assertIn("латинские", message)
+
+    def test_disallowed_character_after_valid_prefix_is_rejected(self):
+        result, message = validate_registration(
+            "student",
+            "Пароль1!€",
+            "Пароль1!€",
+        )
+        self.assertFalse(result)
+        self.assertIn("запрещенные", message)
+
+    def test_non_string_login_is_rejected(self):
+        result, message = validate_registration(
+            12345,
+            "Пароль1!",
+            "Пароль1!",
+        )
+        self.assertFalse(result)
+        self.assertIn("строкой", message)
+
+    def test_non_string_password_is_rejected(self):
+        result, message = validate_registration(
+            "student",
+            None,
+            None,
+        )
+        self.assertFalse(result)
+        self.assertIn("Пароль должен быть строкой", message)
+
+    def test_non_string_confirmation_is_rejected(self):
+        result, message = validate_registration(
+            "student",
+            "Пароль1!",
+            None,
+        )
+        self.assertFalse(result)
+        self.assertIn("Подтверждение пароля", message)
 
     def test_missing_uppercase(self):
         result, message = validate_registration(
