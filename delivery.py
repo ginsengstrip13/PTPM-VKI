@@ -8,7 +8,16 @@ def calculate_delivery_cost(weight: float, distance: int, package_type: str, is_
     В случае критических ошибок или неверных параметров возвращает (-1, "0000-00-00").
     """
 
-    # TODO: Проверить физические ограничения на вес и дистанцию (границы до 50кг и 5000км)
+    if (
+        not isinstance(weight, (int, float))
+        or isinstance(weight, bool)
+        or not isinstance(distance, int)
+        or isinstance(distance, bool)
+        or not isinstance(package_type, str)
+        or not isinstance(is_express, bool)
+    ):
+        return -1, "0000-00-00"
+
     if weight < 0.1 or weight > 50.0 or distance < 1 or distance > 5000:
         return -1, "0000-00-00"
 
@@ -41,7 +50,7 @@ def calculate_delivery_cost(weight: float, distance: int, package_type: str, is_
     days_needed = max(1, distance // 500)
 
     if is_express:
-        days_needed = days_needed // 2
+        days_needed = max(1, days_needed // 2)
 
     delivery_date = current_date + datetime.timedelta(days=days_needed)
 
