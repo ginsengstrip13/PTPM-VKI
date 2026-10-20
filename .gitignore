@@ -3,3 +3,8 @@ __pycache__/
 .idea/
 .pytest_cache/
 logs/*.log
+*.db
+.coverage
+htmlcov/
+.lab3_trace
+.lab3_coverage/
